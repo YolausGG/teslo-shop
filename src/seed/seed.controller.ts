@@ -9,7 +9,7 @@ export class SeedController {
     private readonly seedService: SeedService) { }
 
   @Get()
-  // @Auth(ValidRoles.admin)
+  @Auth()
   getSeed() {
     return this.seedService.runSeed();
   }

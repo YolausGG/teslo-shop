@@ -1,3 +1,6 @@
+
+import { SeedUser } from './seedUser.interface';
+
 interface SeedProduct {
     description: string;
     images: string[];
@@ -16,5 +19,6 @@ type ValidTypes = 'shirts' | 'pants' | 'hoodies' | 'hats';
 
 
 export interface SeedData {
+    users: SeedUser[];
     products: SeedProduct[];
 }

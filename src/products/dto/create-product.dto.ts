@@ -36,13 +36,14 @@ export class CreateProductDto {
     @IsOptional()
     tags: string[];
 
+    @IsString()
+    @IsOptional()
+    type?: string;
+
     @IsString({ each: true })
     @IsArray()
     @IsOptional()
     images?: string[];
 
-    @IsString()
-    @IsOptional()
-    type?: string;
 
 }

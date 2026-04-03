@@ -13,7 +13,7 @@ export class Product {
     })
     title: string;
 
-    @Column('float',{
+    @Column('float', {
         default: 0
     })
     price: number;
@@ -34,7 +34,7 @@ export class Product {
     })
     stock: number;
 
-    @Column('text',{
+    @Column('text', {
         array: true
     })
     sizes: string[];
@@ -48,6 +48,11 @@ export class Product {
     })
     tags: string[];
 
+    @Column({
+        type: 'text'
+    })
+    type: string;
+
     // images
     @OneToMany(
         () => ProductImage,
@@ -56,26 +61,24 @@ export class Product {
     )
     images?: ProductImage[];
 
-
     @ManyToOne(
         () => User,
-        ( user ) => user.product,
+        (user) => user.product,
         { eager: true }
     )
     user: User
 
-
     @BeforeInsert()
     checkSlugInsert() {
 
-        if ( !this.slug ) {
+        if (!this.slug) {
             this.slug = this.title;
         }
 
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ','_')
-            .replaceAll("'",'')
+            .replaceAll(' ', '_')
+            .replaceAll("'", '')
 
     }
 
@@ -83,8 +86,8 @@ export class Product {
     checkSlugUpdate() {
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ','_')
-            .replaceAll("'",'')
+            .replaceAll(' ', '_')
+            .replaceAll("'", '')
     }
 
 
