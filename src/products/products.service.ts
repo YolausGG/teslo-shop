@@ -6,6 +6,8 @@ import { DataSource, ILike, Repository } from 'typeorm';
 import { Product, ProductImage } from './entities';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
+import { User } from '../auth/entities/user.entity';
+import { use } from 'passport';
 
 
 @Injectable()
@@ -25,14 +27,15 @@ export class ProductsService {
 
   ) { }
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, user: User) {
 
     try {
 
       const { images = [], ...productDetails } = createProductDto;
       const product = this.productRepository.create({
         ...createProductDto,
-        images: images.map(image => this.productImageRepository.create({ url: image }))
+        images: images.map(image => this.productImageRepository.create({ url: image })),
+        user
       });
 
       await this.productRepository.save(product);
@@ -103,7 +106,7 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, updateProductDto: UpdateProductDto) {
+  async update(id: string, updateProductDto: UpdateProductDto, user: User) {
 
     const { images, ...toUpdate } = updateProductDto;
 
@@ -125,11 +128,10 @@ export class ProductsService {
           image => this.productImageRepository.create({ url: image })
         )
 
-      } else {
-
       }
-
       //await this.productRepository.save(product)
+      product.user = user;
+
       await queryRunner.manager.save(product);
 
       await queryRunner.commitTransaction();
@@ -171,9 +173,9 @@ export class ProductsService {
 
     try {
       return await query
-      .delete()
-      .where({})
-      .execute();
+        .delete()
+        .where({})
+        .execute();
 
     } catch (error) {
       this.handleDBExceptions(error)

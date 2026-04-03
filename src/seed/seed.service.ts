@@ -1,25 +1,26 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { DataSource } from 'typeorm';
 import { initialData } from './seed';
 import { Product, ProductImage } from 'src/products/entities';
 import { ProductsService } from '../products/products.service';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class SeedService {
 
   constructor(
-
     private readonly productsService: ProductsService,
     private readonly dataSource: DataSource
   ) { }
+
   async runSeed() {
-
-
-
     await this.insertNewProducts()
 
     return 'Run execute'
+  }
+
+  private async deleteTables(){
+
   }
 
   private async insertNewProducts() {
@@ -29,13 +30,14 @@ export class SeedService {
     await queryRunner.startTransaction()
 
     try {
-      const pagination: PaginationDto = {}
-      const products = await this.productsService.findAll(pagination)
 
+      const products = initialData.products;
+      
+
+      // await queryRunner.manager.delete(Product, {});
       if (products.length > 0) {
-        await this.productsService.deleteAllProducts()
+        // await this.productsService.deleteAllProducts()
       }
-
 
       const productsToInsert = initialData.products.map(({ images, ...product }) => {
         const prod = this.dataSource.manager.create(Product, {
@@ -45,12 +47,22 @@ export class SeedService {
         return prod;
       });
 
+
       await queryRunner.manager.save(Product, productsToInsert);
 
       await queryRunner.commitTransaction()
       await queryRunner.release()
 
+      // Delete all existing products
+      // await queryRunner.manager.delete(Product, {});
 
+      // const productsToInsert = initialData.products.map(({ images, ...product }) => {
+      //   const prod = queryRunner.manager.create(Product, {
+      //     ...product,
+      //     images: images.map(url => queryRunner.manager.create(ProductImage, { url }))
+      //   });
+      //   return prod;
+      // });
     } catch (error) {
 
       await queryRunner.rollbackTransaction()
@@ -67,11 +79,17 @@ export class SeedService {
 
   // const products = initialData.products;
 
-  // const insertPromises = [];
+  // const insertPromises: Product[] = [];
 
-  // products.forEach( product => {
-  //   const prod:Product = {...product}
-  //   insertPromises.push(this.productsService.create(prod));
+  // products.forEach(async product => {
+
+  //   const prod = await this.productsService.create(product);
+  //   insertPromises.push(prod);
   // })
-  
+
+  // await Promise.all(insertPromises);
+
+  // return true
+  // }
+
 }

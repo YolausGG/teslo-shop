@@ -1,45 +1,46 @@
-import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ProductImage } from "./product-image.entity";
+import { BeforeInsert, BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductImage } from './';
+import { User } from '../../auth/entities/user.entity';
 
-@Entity()
+@Entity({ name: 'products' })
 export class Product {
 
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column('text', {
-        unique: true
+        unique: true,
     })
-    title: string
+    title: string;
 
-    @Column('float', {
+    @Column('float',{
         default: 0
     })
-    price: number
+    price: number;
 
     @Column({
         type: 'text',
         nullable: true
     })
-    description: string
+    description: string;
 
     @Column('text', {
-        unique: true,
+        unique: true
     })
-    slug: string
+    slug: string;
 
     @Column('int', {
         default: 0
     })
-    stock: number
+    stock: number;
 
-    @Column('text', {
+    @Column('text',{
         array: true
     })
-    sizes: string[]
+    sizes: string[];
 
     @Column('text')
-    gender: string
+    gender: string;
 
     @Column('text', {
         array: true,
@@ -47,32 +48,44 @@ export class Product {
     })
     tags: string[];
 
+    // images
     @OneToMany(
         () => ProductImage,
         (productImage) => productImage.product,
-        {cascade: true, eager: true} 
+        { cascade: true, eager: true }
     )
     images?: ProductImage[];
 
+
+    @ManyToOne(
+        () => User,
+        ( user ) => user.product,
+        { eager: true }
+    )
+    user: User
+
+
     @BeforeInsert()
-    checkSlogInsert() {
-        if (!this.slug) {
-            this.slug = this.title
+    checkSlugInsert() {
+
+        if ( !this.slug ) {
+            this.slug = this.title;
         }
 
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ', '_')
-            .replaceAll("'", '')
+            .replaceAll(' ','_')
+            .replaceAll("'",'')
+
     }
 
     @BeforeUpdate()
     checkSlugUpdate() {
-
         this.slug = this.slug
             .toLowerCase()
-            .replaceAll(' ', '_')
-            .replaceAll("'", '')
+            .replaceAll(' ','_')
+            .replaceAll("'",'')
     }
+
 
 }
