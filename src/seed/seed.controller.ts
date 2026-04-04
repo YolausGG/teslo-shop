@@ -9,7 +9,7 @@ export class SeedController {
     private readonly seedService: SeedService) { }
 
   @Get()
-  @Auth()
+  // @Auth()
   getSeed() {
     return this.seedService.runSeed();
   }

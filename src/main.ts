@@ -27,6 +27,6 @@ async function main() {
   SwaggerModule.setup('api', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3001);
-  logger.log(`App running on port ${process.env.PORT}`)
+  logger.log(`App running on port ${process.env.PORT || 3001}`)
 }
 main();
